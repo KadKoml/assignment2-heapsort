@@ -84,4 +84,65 @@ public class HeapSort {
         }
         return true;
     }
+
+    public void sortOptimized(int[] array) {
+        if (array == null || array.length <= 1) return;
+
+        tracker.reset();
+        tracker.startTimer();
+
+        int n = array.length;
+
+        for (int i = (n - 2) / 2; i >= 0; i--) {
+            heapifyOptimized(array, n, i);
+        }
+
+        for (int i = n - 1; i > 0; i--) {
+            int temp = array[0];
+            array[0] = array[i];
+            array[i] = temp;
+            tracker.incrementSwaps();
+            tracker.incrementArrayAccesses(4);
+
+            heapifyOptimized(array, i, 0);
+        }
+
+        tracker.stopTimer();
+    }
+
+    private void heapifyOptimized(int[] array, int n, int i) {
+        int current = i;
+
+        while (true) {
+            int largest = current;
+            int left = 2 * current + 1;
+            int right = 2 * current + 2;
+
+            if (left < n) {
+                tracker.incrementComparisons();
+                tracker.incrementArrayAccesses(2);
+                if (array[left] > array[largest]) {
+                    largest = left;
+                }
+            }
+
+            if (right < n) {
+                tracker.incrementComparisons();
+                tracker.incrementArrayAccesses(2);
+                if (array[right] > array[largest]) {
+                    largest = right;
+                }
+            }
+
+            if (largest == current) break;
+
+            int swap = array[current];
+            array[current] = array[largest];
+            array[largest] = swap;
+            tracker.incrementSwaps();
+            tracker.incrementArrayAccesses(4);
+
+            current = largest;
+        }
+    }
 }
